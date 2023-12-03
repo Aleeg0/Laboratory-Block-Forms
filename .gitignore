@@ -27,9 +27,9 @@
 #
 
 #Other items like iconics or pictures
-.ico
-.jpg
-.png
+*.ico
+*.jpg
+*.png
 
 #The projects
 *.dproj
