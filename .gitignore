@@ -33,7 +33,7 @@
 
 #The projects
 *.dproj
-*.dpr
+#*.dpr
 
 #The moduls
 *.dfm
