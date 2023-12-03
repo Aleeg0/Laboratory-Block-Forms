@@ -26,6 +26,14 @@
 #*.obj
 #
 
+#Other items like iconics or pictures
+#.ico
+#.jpg
+#.png
+
+#The projects
+*.dproj
+
 # Delphi compiler-generated binaries (safe to delete)
 *.exe
 *.dll
