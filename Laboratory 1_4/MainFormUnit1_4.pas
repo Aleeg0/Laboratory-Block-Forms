@@ -197,7 +197,7 @@ Const
     GOOD_KEYS: Set Of Char = ['1' .. '9', #08];
     MAX_DIGITS: Integer = 2;
 Var
-    NaturalEdit: TEdit;
+    SizeEdit: TEdit;
     TempKey: Char;
 Begin
     SizeEdit := TEdit(Sender);
