@@ -39,7 +39,7 @@
 *.dfm
 
 # Delphi compiler-generated binaries (safe to delete)
-*.exe
+#*.exe
 *.dll
 *.bpl
 *.bpi
