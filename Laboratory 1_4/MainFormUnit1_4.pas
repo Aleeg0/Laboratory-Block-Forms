@@ -40,7 +40,6 @@ Type
             Shift: TShiftState);
         Procedure SizeButtonClick(Sender: TObject);
         Procedure ElementsOfArrayKeyPress(Sender: TObject; Var Key: Char);
-        Procedure ElementsOfArrayClick(Sender: TObject);
         Procedure CreateBArrayButtonKeyDown(Sender: TObject; Var Key: Word;
             Shift: TShiftState);
         Procedure CreateBArrayButtonClick(Sender: TObject);
@@ -48,11 +47,14 @@ Type
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Procedure ElementsOfArrayKeyUp(Sender: TObject; Var Key: Word;
+            Shift: TShiftState);
     Private
         Size: Integer;
         Arr: TArrayOfInt;
         IsFileSaved: Boolean;
         IsArrayFilled: Boolean;
+        WasChanges: Boolean;
     Public
         { Public declarations }
     End;
@@ -167,17 +169,36 @@ Begin
         Arr := Nil;
     SetLength(Arr, Size);
     ElementsOfArray.Enabled := True;
+    ElementsInfo.Visible := True;
+    ElementsOfArray.Visible := True;
 End;
 
 Procedure TMainForm.SizeEditChange(Sender: TObject);
+Var
+    I, J : Integer;
 Begin
     SizeButton.Enabled := Not String.IsNullOrEmpty(SizeEdit.Text);
     If Not SizeButton.Enabled Then
     Begin
         ElementsOfArray.Enabled := False;
+    End;
+    If WasChanges Then
+    Begin
+        // Очистка всех ячеек StringGrid
+        For I := 1 To ElementsOfArray.RowCount Do
+        Begin
+            For J := 1 To ElementsOfArray.ColCount Do
+            Begin
+                ElementsOfArray.Cells[J - 1, I - 1] := '';
+            End;
+        End;
+        IsArrayFilled := False;
+        ElementsInfo.Visible := False;
+        ElementsOfArray.Visible := False;
         CreateBArrayButton.Enabled := False;
         ShowListButton.Enabled := False;
     End;
+    WasChanges := True;
 End;
 
 Procedure TMainForm.SizeEditKeyDown(Sender: TObject; Var Key: Word;
@@ -186,8 +207,8 @@ Begin
     If (SizeButton.Enabled) And ((Key = VK_DOWN) OR (Key = VK_RIGHT) Or
         (Key = VK_RETURN)) Then
         ActiveControl := SizeButton;
-    If (CreateBArrayButton.Enabled) And (Key = VK_UP) Or (Key = VK_LEFT) Then
-        ActiveControl := CreateBArrayButton;
+    If (ShowListButton.Enabled) And ((Key = VK_UP) Or (Key = VK_LEFT)) Then
+        ActiveControl := ShowListButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
         ((SsShift In Shift) Or (SsCtrl In Shift));
 End;
@@ -233,31 +254,15 @@ Begin
         ActiveControl := ElementsOfArray;
 End;
 
-Procedure TMainForm.ElementsOfArrayClick(Sender: TObject);
-Var
-    Counter, I: Integer;
-Begin
-    Counter := 0;
-    For I := 1 To Size Do
-    Begin
-        If Length(ElementsOfArray.Cells[I, 1]) <> 0 Then
-        Begin
-            Arr[I - 1] := StrToInt(ElementsOfArray.Cells[I, 1]);
-            Inc(Counter);
-        End;
-    End;
-    If Counter = Size Then
-        IsArrayFilled := True
-    Else
-        IsArrayFilled := False;
-    CreateBArrayButton.Enabled := IsArrayFilled;
-End;
-
 Procedure TMainForm.ElementsOfArrayKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
 Begin
+    If Key = VK_UP Then
+        ActiveControl := SizeButton;
     If (CreateBArrayButton.Enabled) And (Key = VK_DOWN) Then
-        ActiveControl := CreateBArrayButton;
+        ActiveControl := CreateBArrayButton
+    Else If Not(CreateBArrayButton.Enabled) And (Key = VK_DOWN) Then
+        ActiveControl := SizeEdit;
     If (CreateBArrayButton.Enabled) And (IsArrayFilled) And
         (Key = VK_RETURN) Then
         ActiveControl := CreateBArrayButton;
@@ -290,15 +295,36 @@ Begin
     If (Key <> #0) And (Pos('-', TempNumber) = 1) And (Key In GOOD_KEYS) And
         (Length(TempNumber) < MAX_DIGITS + 1) Then
         ArrGrid.Cells[ArrGrid.Col, 1] := ArrGrid.Cells[ArrGrid.Col, 1] + Key;
-        //Раскомментировать для извращенцов!!!
-    //if (Length(ArrGrid.Cells[ArrGrid.Col,1]) = 0) And (Key = #08) And (1 < ArrGrid.Col) then
-       // ArrGrid.Col := ArrGrid.Col - 1;
+    // Раскомментировать для извращенцов!!!
+    // if (Length(ArrGrid.Cells[ArrGrid.Col,1]) = 0) And (Key = #08) And (1 < ArrGrid.Col) then
+    // ArrGrid.Col := ArrGrid.Col - 1;
     If (Key = #13) And (ArrGrid.Col < ArrGrid.ColCount - 1) Then
     Begin
         ArrGrid.Col := ArrGrid.Col + 1;
 
     End;
 
+End;
+
+Procedure TMainForm.ElementsOfArrayKeyUp(Sender: TObject; Var Key: Word;
+    Shift: TShiftState);
+Var
+    Counter, I: Integer;
+Begin
+    Counter := 0;
+    For I := 1 To Size Do
+    Begin
+        If Length(ElementsOfArray.Cells[I, 1]) <> 0 Then
+        Begin
+            Arr[I - 1] := StrToInt(ElementsOfArray.Cells[I, 1]);
+            Inc(Counter);
+        End;
+    End;
+    If Counter = Size Then
+        IsArrayFilled := True
+    Else
+        IsArrayFilled := False;
+    CreateBArrayButton.Enabled := IsArrayFilled;
 End;
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
