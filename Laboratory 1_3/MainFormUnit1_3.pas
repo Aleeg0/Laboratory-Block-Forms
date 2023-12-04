@@ -290,7 +290,7 @@ Begin
     Application.CreateForm(TOutputAnswerUnit, OutputAnswerUnit);
     OutputAnswerUnit.ShowModal;
     OutputAnswerUnit.Destroy;
-    outputAnswerUnit := Nil;
+    OutputAnswerUnit := Nil;
 End;
 
 Procedure TMainForm.XEditChange(Sender: TObject);
@@ -357,8 +357,17 @@ Begin
     If (Length(Edit.Text) > MAX_DIGITS) And (Key <> #08) And
         (Edit.SelLength = 0) Then
         Key := #0;
-    If (Edit.SelLength = 0) And (Pos('0', Edit.Text) = 1) And
-        ((Key <> ',') And (Key <> #08)) Then
+    If (Pos(',', Edit.Text) <> 0) And Not(Key In GOOD_KEYS) Then
+        Key := #0;
+    If (Pos('0,', Edit.Text) = 1) And Not(Key In GOOD_KEYS) Then
+        Key := #0;
+    If (Length(Edit.Text) > 0) And (Edit.SelLength = 0) And (Edit.SelStart = 0)
+        And ((Key = '0') or (Key = ',')) Then
+        Key := #0;
+    If  (Edit.SelLength <> 0) And (Length(Edit.Text) <> Edit.SelLength) Then
+        Key := #0;
+    If (Length(Edit.Text) = 1) And (Edit.SelLength = 0) And (Edit.Text = '0')
+        And (Key <> ',') And (Key <> #08) Then
         Key := #0;
 
 End;
