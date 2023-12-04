@@ -152,30 +152,41 @@ Begin
 End;
 
 Procedure TMainForm.SizeButtonClick(Sender: TObject);
+Const
+    MAX_SIZE: Integer = 1000;
+    MIN_SIZE: Integer = 0;
 Var
     I: Integer;
 Begin
     // creating Grid
     Size := StrToInt(SizeEdit.Text);
-    ElementsOfArray.RowCount := 2;
-    ElementsOfArray.ColCount := Size + 1;
-    ElementsOfArray.FixedCols := 1;
-    ElementsOfArray.FixedRows := 1;
-    ElementsOfArray.Cells[0, 0] := '№';
-    ElementsOfArray.Cells[0, 1] := 'Элемент';
-    For I := 1 To Size Do
-        ElementsOfArray.Cells[I, 0] := IntToStr(I);
-    If Arr <> Nil Then
-        Arr := Nil;
-    SetLength(Arr, Size);
-    ElementsOfArray.Enabled := True;
-    ElementsInfo.Visible := True;
-    ElementsOfArray.Visible := True;
+    If (MIN_SIZE < Size) And (Size < MAX_SIZE) Then
+    Begin
+        ElementsOfArray.RowCount := 2;
+        ElementsOfArray.ColCount := Size + 1;
+        ElementsOfArray.FixedCols := 1;
+        ElementsOfArray.FixedRows := 1;
+        ElementsOfArray.Cells[0, 0] := '№';
+        ElementsOfArray.Cells[0, 1] := 'Элемент';
+        For I := 1 To Size Do
+            ElementsOfArray.Cells[I, 0] := IntToStr(I);
+        If Arr <> Nil Then
+            Arr := Nil;
+        SetLength(Arr, Size);
+        ElementsOfArray.Enabled := True;
+        ElementsInfo.Visible := True;
+        ElementsOfArray.Visible := True;
+    End
+    Else
+        MessageBox(MainForm.Handle,
+            'Размер не соответствует границам! Проверьте данные.', 'Ой-йой',
+            MB_ICONERROR);
+
 End;
 
 Procedure TMainForm.SizeEditChange(Sender: TObject);
 Var
-    I, J : Integer;
+    I, J: Integer;
 Begin
     SizeButton.Enabled := Not String.IsNullOrEmpty(SizeEdit.Text);
     If Not SizeButton.Enabled Then
@@ -295,14 +306,13 @@ Begin
     If (Key <> #0) And (Pos('-', TempNumber) = 1) And (Key In GOOD_KEYS) And
         (Length(TempNumber) < MAX_DIGITS + 1) Then
         ArrGrid.Cells[ArrGrid.Col, 1] := ArrGrid.Cells[ArrGrid.Col, 1] + Key;
+    if (Key <> #0) And (Pos('-', TempNumber) = 1) And (Key = '0') then
+        key := #0;
     // Раскомментировать для извращенцов!!!
     // if (Length(ArrGrid.Cells[ArrGrid.Col,1]) = 0) And (Key = #08) And (1 < ArrGrid.Col) then
     // ArrGrid.Col := ArrGrid.Col - 1;
     If (Key = #13) And (ArrGrid.Col < ArrGrid.ColCount - 1) Then
-    Begin
         ArrGrid.Col := ArrGrid.Col + 1;
-
-    End;
 
 End;
 
@@ -314,7 +324,7 @@ Begin
     Counter := 0;
     For I := 1 To Size Do
     Begin
-        If Length(ElementsOfArray.Cells[I, 1]) <> 0 Then
+        If (Length(ElementsOfArray.Cells[I, 1]) <> 0) And (ElementsOfArray.Cells[I, 1] <> '-') Then
         Begin
             Arr[I - 1] := StrToInt(ElementsOfArray.Cells[I, 1]);
             Inc(Counter);

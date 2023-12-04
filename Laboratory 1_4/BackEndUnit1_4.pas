@@ -152,10 +152,13 @@ Begin
 End;
 
 Function TFileReader.InputArray(Const SIZE: Integer): TArrayOfInt;
+Const
+    MIN_NUMBER: Integer = -99999;
+    MAX_NUMBER: Integer = 99999;
 Var
     IsCorrect: Boolean;
     Arr: TArrayOfInt;
-    I: Integer;
+    TempNumber, I: Integer;
 Begin
     SetLength(Arr, SIZE);
     IsCorrect := False;
@@ -164,12 +167,19 @@ Begin
     For I := 1 To SIZE Do
     Begin
         If Status Then
+        Begin
             Try
-                Read(InFile, Arr[I - 1]);
+                Read(InFile, TempNumber);
             Except
-                Writeln('Invalid type. Check data in the file.');
                 Status := False;
             End;
+            If Status And ((TempNumber < MIN_NUMBER) Or
+                (MAX_NUMBER < TempNumber)) Then
+                Status := False
+            Else If Status Then
+                Arr[I - 1] := TempNumber;
+
+        End;
     End;
     CloseFile(InFile);
     InputArray := Arr;
