@@ -137,6 +137,8 @@ Begin
     If (Length(EpsEdit.Text) > 2) And (Pos('0,', EpsEdit.Text) <> 1) And
         (Key <> #08) Then
         Key := #0;
+    if ((EpsEdit.SelStart = 1 ) Or (EpsEdit.SelStart = 2)) And (Key = #08) then
+        Key := #0;
     If (EpsEdit.SelLength = Length(EpsEdit.Text)) And (EpsEdit.SelLength <> 0)
         And (Key <> #08) Then
         Key := #0;
@@ -335,7 +337,7 @@ Begin
     If Not(BitBtn1.Enabled) And (Key = VK_DOWN) Then
         ActiveControl := IsUserEps;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift));
+        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
 End;
 
 Procedure TMainForm.XEditKeyPress(Sender: TObject; Var Key: Char);
@@ -347,20 +349,6 @@ Var
     TempKey: Char;
 Begin
     Edit := TEdit(Sender);
-    // previous Code
-    { If (Edit.Text <> '0') And Not((Key In GOOD_KEYS) OR (Key = '0')) Then
-      Key := #0;
-      If (Length(Edit.Text) = 1) And ((Edit.SelLength = 0)) And (Edit.Text = '0')
-      And ((Key <> #44) And (Key <> #08)) Then
-      Key := #0;
-      If (Length(Edit.Text) = 1) And (Edit.SelLength = 1) And
-      Not(Key In GOOD_KEYS) Then
-      Key := #0;
-      // If (Length(Edit.Text) > 0) And Not((Key In GOOD_KEYS) Or (Key = '0')) Then
-      // Key := #0;
-      If (Length(Edit.Text) > MAX_DIGITS_SIZE) And ((Key <> #08)) And
-      (Edit.SelLength = 0) Then
-      Key := #0; }
     // new Code
     If (Length(Edit.Text) = 0) And Not(Key In GOOD_KEYS) Then
         Key := #0;
@@ -383,7 +371,7 @@ Begin
          key := #0;
     if (Length(Edit.Text) > 1) And (Edit.SelStart = 1) And (Edit.Text[2] = '0') And (Key = #08) then
         Key := #0;
-    if (Length(Edit.Text) > 1) And (Edit.SelLength <> 0) And (Length(Edit.Text) <> Edit.SelLength) And (Edit.SelStart = 0) And (Edit.Text[Edit.SelLength + 1] = '0')  then
+    if (Length(Edit.Text) > 1) And (Edit.SelLength <> 0) And (Length(Edit.Text) <> Edit.SelLength) And (Edit.SelStart = 0) And (Edit.Text[Edit.SelLength + 1] = '0') And Not(Key In ['1'..'9']) then
         Key := #0;
     // запятые
     If (Length(Edit.Text) > 0) And (Edit.SelLength = 0) And (Edit.SelStart = 0)
