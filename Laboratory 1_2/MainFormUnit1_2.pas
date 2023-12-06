@@ -150,19 +150,20 @@ Procedure TMainForm.SizeEditKeyDown(Sender: TObject; Var Key: Word;
 Begin
     If (Button1.Enabled) And ((Key = VK_RETURN) Or (Key = VK_DOWN)) Then
         ActiveControl := Button1;
-    TEdit(Sender).ReadOnly := (SsShift In Shift) Or (SsCtrl In Shift);
+    TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
+        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
 End;
 
 Procedure TMainForm.SizeEditKeyPress(Sender: TObject; Var Key: Char);
 Const
     GOOD_KEYS: Set Of Char = ['1' .. '9', #08];
-    MAX_DIGITS_SIZE: Integer = 1;
+    MAX_DIGITS: Integer = 1;
 Var
-    SizeEdit: TEdit;
+    Edit: TEdit;
     TempKey: Char;
 Begin
-    SizeEdit := TEdit(Sender);
-    If Not(Key In GOOD_KEYS) Then
+    Edit := TEdit(Sender);
+    {If Not(Key In GOOD_KEYS) Then
         Key := #0;
     If (Length(SizeEdit.Text) = 1) Then
     Begin
@@ -175,6 +176,30 @@ Begin
         Key := #0;
     If (Length(SizeEdit.Text) > MAX_DIGITS_SIZE) And ((Key <> #08)) And
         (SizeEdit.SelLength = 0) Then
+        Key := #0;}
+    If (Length(Edit.Text) = 0) And Not(Key In ['1' .. '5'] ) Then
+        Key := #0;
+    If (Length(Edit.Text) > 0) And
+        Not((Key In GOOD_KEYS) Or (Key = '0')) Then
+        Key := #0;
+    // for backspace
+    If (Length(Edit.Text) > 1) And (Edit.SelStart = 1) And
+        (Edit.Text[2] = '0') And (Key = #08) Then
+        Key := #0;
+    If (Length(Edit.Text) > 1) And
+        (Length(Edit.Text) <> Edit.SelLength) And
+        (Edit.SelLength <> 0) And (Edit.SelStart = 0) And
+        (Edit.Text[Edit.SelLength + 1] = '0') And Not(Key in ['1'..'5']) Then
+        Key := #0;
+    // Key := 0;
+    If (Edit.SelStart = 0) And (Key = '0') Then
+        Key := #0;
+    If (Length(Edit.Text) > MAX_DIGITS) And (Key <> #08) And
+        (Edit.SelLength = 0) Then
+        Key := #0;
+    // доп для данного задания
+    If (Length(Edit.Text) > 1) And
+        (Edit.SelLength <> 0) And (Edit.SelStart = 0) And Not(Key in ['1'..'5',#08]) Then
         Key := #0;
 End;
 

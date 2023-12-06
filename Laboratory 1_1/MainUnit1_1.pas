@@ -82,9 +82,8 @@ End;
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Begin
-    //CanClose := MessageBox(MainForm.Handle, 'Вы действительно хотите выйти?',
-        //'Выход', MB_ICONQUESTION + MB_YESNO) = ID_YES;
-    ExitUnit.Show;
+    CanClose := MessageBox(MainForm.Handle, 'Вы действительно хотите выйти?',
+        'Выход', MB_ICONQUESTION + MB_YESNO) = ID_YES;
 End;
 
 Procedure TMainForm.InstructionClick(Sender: TObject);
@@ -101,7 +100,7 @@ Begin
         ActiveControl := Num2Edit;
     If (Button1.Enabled) And (Key = VK_UP) Then
         ActiveControl := Button1;
-    TEdit(Sender).ReadOnly := (SsShift In Shift) Or (SsCtrl In Shift);
+    TEdit(Sender).ReadOnly := ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
 End;
 
 Procedure TMainForm.Num2EditKeyDown(Sender: TObject; Var Key: Word;
@@ -111,7 +110,8 @@ Begin
         ActiveControl := Num1Edit;
     If (Button1.Enabled) And ((Key = VK_RETURN) Or (Key = VK_DOWN)) Then
         ActiveControl := Button1;
-    TEdit(Sender).ReadOnly := (SsShift In Shift) Or (SsCtrl In Shift);
+    TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
+        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
 End;
 
 Procedure TMainForm.NumEditChange(Sender: TObject);
@@ -122,19 +122,31 @@ End;
 
 Procedure TMainForm.NumEditKeyPress(Sender: TObject; Var Key: Char);
 Const
-    GOOD_KEYS: Set Of Char = ['0' .. '9'];
-    MAX_DIGITS_SIZE: Integer = 8;
+    GOOD_KEYS: Set Of Char = ['1' .. '9',#08];
+    MAX_DIGITS: Integer = 8;
 Var
-    NumEdit: TEdit;
+    Edit: TEdit;
 Begin
-    NumEdit := TEdit(Sender);
-    If Not((Key In GOOD_KEYS) Or (Key = #08)) Then
+    Edit := TEdit(Sender);
+    If (Length(Edit.Text) = 0) And Not(Key In GOOD_KEYS) Then
         Key := #0;
-    If (Length(NumEdit.Text) = 1) And (NumEdit.Text = '0') And
-        (Key IN GOOD_KEYS) Then
+    If (Length(Edit.Text) > 0) And
+        Not((Key In GOOD_KEYS) Or (Key = '0')) Then
         Key := #0;
-    If (Length(NumEdit.Text) > MAX_DIGITS_SIZE) And ((Key <> #08)) And
-        (NumEdit.SelLength = 0) Then
+    // for backspace
+    If (Length(Edit.Text) > 1) And (Edit.SelStart = 1) And
+        (Edit.Text[2] = '0') And (Key = #08) Then
+        Key := #0;
+    If (Length(Edit.Text) > 1) And
+        (Length(Edit.Text) <> Edit.SelLength) And
+        (Edit.SelLength <> 0) And (Edit.SelStart = 0) And
+        (Edit.Text[Edit.SelLength + 1] = '0') And Not(Key in ['1'..'9']) Then
+        Key := #0;
+    // Key := 0;
+    If (Edit.SelStart = 0) And (Key = '0') Then
+        Key := #0;
+    If (Length(Edit.Text) > MAX_DIGITS) And (Key <> #08) And
+        (Edit.SelLength = 0) Then
         Key := #0;
 End;
 

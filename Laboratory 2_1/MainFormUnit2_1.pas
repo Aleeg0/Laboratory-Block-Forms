@@ -47,9 +47,9 @@ Type
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
     Private
         NumberOfTriangles: Integer;
-        WasChanged: Boolean;
-        IsGridFill: Boolean;
+        WasNumberOfTrianglesChanged: Boolean;
         IsFileSaved: Boolean;
+        wasSideChanged : Boolean;
     Public
         { Public declarations }
     End;
@@ -172,8 +172,9 @@ Begin
         SidesOfTriangles.Enabled := False;
 
     End;
-    If WasChanged Then
+    If WasNumberOfTrianglesChanged Then
     Begin
+        MaxTriangleLabel.Caption := '';
         SidesOfTriangles.Visible := False;
         SidesOfTrianglesInfo.Visible := False;
         FindTriangleButton.Enabled := False;
@@ -186,7 +187,7 @@ Begin
             End;
         End;
     End;
-    WasChanged := True;
+    WasNumberOfTrianglesChanged := True;
 End;
 
 Procedure TMainForm.NumberOfTrianglesEditKeyDown(Sender: TObject; Var Key: Word;
@@ -358,6 +359,7 @@ Var
     ArrGrid: TStringGrid;
     TempNumber: String;
 Begin
+    MaxTriangleLabel.Caption := '';
     ArrGrid := TStringGrid(Sender);
     TempNumber := ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row];
     If (Key = #08) And (Length(ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row])
@@ -406,6 +408,7 @@ Var
     CountOfExistsTriangles, I, J: Integer;
     CountInputSides: Integer;
     A, B, C: Real;
+    isGridFill : Boolean;
 Begin
     CountOfExistsTriangles := 0;
 
