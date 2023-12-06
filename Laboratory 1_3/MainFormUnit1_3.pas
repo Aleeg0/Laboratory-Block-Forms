@@ -146,6 +146,22 @@ Begin
     If (Length(EpsEdit.Text) > MAX_DIGITS) And (Key <> #08) And
         (EpsEdit.SelLength = 0) Then
         Key := #0;
+        //проверка нулей
+    If (Length(EpsEdit.Text) > 0) And (EpsEdit.SelStart = 0) And
+         (Key = '0') then
+         key := #0;
+    if (Length(EpsEdit.Text) > 1) And (EpsEdit.SelStart = 1) And (EpsEdit.Text[2] = '0') And (Key = #08) then
+        Key := #0;
+    if (Length(EpsEdit.Text) > 1) And (EpsEdit.SelLength <> 0) And (Length(EpsEdit.Text) <> EpsEdit.SelLength) And (EpsEdit.SelStart = 0) And (EpsEdit.Text[EpsEdit.SelLength + 1] = '0')  then
+        Key := #0;
+    // запятые
+    If (Length(EpsEdit.Text) > 0) And (EpsEdit.SelLength = 0) And (EpsEdit.SelStart = 0)
+        And ((Key = '0') or (Key = ',')) Then
+        Key := #0;
+    If (Length(EpsEdit.Text) = 1) And (EpsEdit.SelLength = 0) And (EpsEdit.Text = '0')
+        And (Key <> ',') And (Key <> #08) Then
+        Key := #0;
+
 End;
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
@@ -361,15 +377,21 @@ Begin
         Key := #0;
     If (Pos('0,', Edit.Text) = 1) And Not(Key In GOOD_KEYS) Then
         Key := #0;
+    //проверка нулей
+    If (Length(Edit.Text) > 0) And (Edit.SelStart = 0) And
+         (Key = '0') then
+         key := #0;
+    if (Length(Edit.Text) > 1) And (Edit.SelStart = 1) And (Edit.Text[2] = '0') And (Key = #08) then
+        Key := #0;
+    if (Length(Edit.Text) > 1) And (Edit.SelLength <> 0) And (Length(Edit.Text) <> Edit.SelLength) And (Edit.SelStart = 0) And (Edit.Text[Edit.SelLength + 1] = '0')  then
+        Key := #0;
+    // запятые
     If (Length(Edit.Text) > 0) And (Edit.SelLength = 0) And (Edit.SelStart = 0)
         And ((Key = '0') or (Key = ',')) Then
-        Key := #0;
-    If  (Edit.SelLength <> 0) And (Length(Edit.Text) <> Edit.SelLength) Then
         Key := #0;
     If (Length(Edit.Text) = 1) And (Edit.SelLength = 0) And (Edit.Text = '0')
         And (Key <> ',') And (Key <> #08) Then
         Key := #0;
-
 End;
 
 End.

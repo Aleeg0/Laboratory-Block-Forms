@@ -215,13 +215,16 @@ End;
 Procedure TMainForm.SizeEditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
 Begin
-    If (SizeButton.Enabled) And ((Key = VK_DOWN) OR (Key = VK_RIGHT) Or
-        (Key = VK_RETURN)) Then
+    If (SizeButton.Enabled) And (SizeEdit.SelLength = 0) And
+        ((Key = VK_DOWN) Or (Key = VK_RETURN)) Then
+        ActiveControl := SizeButton;
+    If (SizeButton.Enabled) And (SizeEdit.SelStart = Length(SizeEdit.Text)) And
+        ((Key = VK_RIGHT)) Then
         ActiveControl := SizeButton;
     If (ShowListButton.Enabled) And ((Key = VK_UP) Or (Key = VK_LEFT)) Then
         ActiveControl := ShowListButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift));
+        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
 End;
 
 Procedure TMainForm.SizeEditKeyPress(Sender: TObject; Var Key: Char);
@@ -238,9 +241,19 @@ Begin
     If (Length(SizeEdit.Text) > 0) And
         Not((Key In GOOD_KEYS) Or (Key = '0')) Then
         Key := #0;
-    If (SizeEdit.SelLength > 0) And (Key = '0') Then
+    If (Length(SizeEdit.Text) > 1) And (SizeEdit.SelStart = 1) And
+        (SizeEdit.Text[2] = '0') And (Key = #08) Then
         Key := #0;
-    If (Length(SizeEdit.Text) > MAX_DIGITS) And ((Key <> #08)) And
+    // for backspace
+    If (Length(SizeEdit.Text) > 1) And
+        (Length(SizeEdit.Text) <> SizeEdit.SelLength) And
+        (SizeEdit.SelLength <> 0) And (SizeEdit.SelStart = 0) And
+        (SizeEdit.Text[SizeEdit.SelLength + 1] = '0') And Not(Key in ['1'..'9']) Then
+        Key := #0;
+    If (SizeEdit.SelStart = 0) And (Key = '0') Then
+        Key := #0;
+    // Key := 0;
+    If (Length(SizeEdit.Text) > MAX_DIGITS) And (Key <> #08) And
         (SizeEdit.SelLength = 0) Then
         Key := #0;
 End;
@@ -282,7 +295,7 @@ End;
 Procedure TMainForm.ElementsOfArrayKeyPress(Sender: TObject; Var Key: Char);
 Const
     GOOD_KEYS: Set Of Char = ['0' .. '9'];
-    MAX_DIGITS: Integer = 5;
+    MAX_DIGITS: Integer = 4;
 Var
     ArrGrid: TStringGrid;
     TempNumber: String;
@@ -306,8 +319,8 @@ Begin
     If (Key <> #0) And (Pos('-', TempNumber) = 1) And (Key In GOOD_KEYS) And
         (Length(TempNumber) < MAX_DIGITS + 1) Then
         ArrGrid.Cells[ArrGrid.Col, 1] := ArrGrid.Cells[ArrGrid.Col, 1] + Key;
-    if (Key <> #0) And (Pos('-', TempNumber) = 1) And (Key = '0') then
-        key := #0;
+    If (Key <> #0) And (Pos('-', TempNumber) = 1) And (Key = '0') Then
+        Key := #0;
     // Раскомментировать для извращенцов!!!
     // if (Length(ArrGrid.Cells[ArrGrid.Col,1]) = 0) And (Key = #08) And (1 < ArrGrid.Col) then
     // ArrGrid.Col := ArrGrid.Col - 1;
@@ -324,7 +337,8 @@ Begin
     Counter := 0;
     For I := 1 To Size Do
     Begin
-        If (Length(ElementsOfArray.Cells[I, 1]) <> 0) And (ElementsOfArray.Cells[I, 1] <> '-') Then
+        If (Length(ElementsOfArray.Cells[I, 1]) <> 0) And
+            (ElementsOfArray.Cells[I, 1] <> '-') Then
         Begin
             Arr[I - 1] := StrToInt(ElementsOfArray.Cells[I, 1]);
             Inc(Counter);
