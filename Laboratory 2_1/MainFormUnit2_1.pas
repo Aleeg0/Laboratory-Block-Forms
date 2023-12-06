@@ -170,12 +170,13 @@ Begin
     If Not NumberOfTrianglesButton.Enabled Then
     Begin
         SidesOfTriangles.Enabled := False;
-        FindTriangleButton.Enabled := False;
+
     End;
     If WasChanged Then
     Begin
         SidesOfTriangles.Visible := False;
         SidesOfTrianglesInfo.Visible := False;
+        FindTriangleButton.Enabled := False;
         // ќчистка всех €чеек StringGrid
         For I := 1 To SidesOfTriangles.RowCount Do
         Begin
@@ -200,7 +201,9 @@ Begin
     If (NumberOfTrianglesButton.Enabled) And
         (Length(CurEdit.Text) = CurEdit.SelStart) And (Key = VK_RIGHT) Then
         ActiveControl := NumberOfTrianglesButton;
-    If (FindTriangleButton.Enabled) And ((Key = VK_UP) Or (Key = VK_LEFT)) Then
+    If (FindTriangleButton.Enabled) And (CurEdit.SelLength = 0) And (CurEdit.SelStart = 0) And (Key = VK_LEFT) Then
+        ActiveControl := FindTriangleButton;
+    if (FindTriangleButton.Enabled) And (Key = VK_UP) Then
         ActiveControl := FindTriangleButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
         ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
