@@ -163,20 +163,6 @@ Var
     TempKey: Char;
 Begin
     Edit := TEdit(Sender);
-    {If Not(Key In GOOD_KEYS) Then
-        Key := #0;
-    If (Length(SizeEdit.Text) = 1) Then
-    Begin
-        TempKey := (SizeEdit.Text)[1];
-        If (TempKey In ['6' .. '9']) And (Key <> #08) Then
-            Key := #0;
-    End;
-    If (Length(SizeEdit.Text) > 0) And
-        Not((Key In GOOD_KEYS) Or (Key = '0')) Then
-        Key := #0;
-    If (Length(SizeEdit.Text) > MAX_DIGITS_SIZE) And ((Key <> #08)) And
-        (SizeEdit.SelLength = 0) Then
-        Key := #0;}
     If (Length(Edit.Text) = 0) And Not(Key In ['1' .. '5'] ) Then
         Key := #0;
     If (Length(Edit.Text) > 0) And
