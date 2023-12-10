@@ -116,6 +116,13 @@ Begin
             MessageBox(MainForm.Handle,
                 'Файл закрыт для чтения или не текстовый! ', 'Ошибка',
                 MB_ICONERROR);
+        If Not FileReader.GetStatus() Then
+        Begin
+            SizeEdit.Text := '';
+            SizeButton.Enabled := False;
+            ElementsOfArray.Enabled := False;
+            ElementsOfArray.Visible := False;
+        End;
         FileReader.Destroy;
         FileReader := Nil;
     End;
@@ -208,6 +215,7 @@ Begin
         ElementsOfArray.Visible := False;
         CreateBArrayButton.Enabled := False;
         ShowListButton.Enabled := False;
+        SaveFileButton.Enabled := False;
     End;
     WasChanges := True;
 End;
@@ -248,7 +256,8 @@ Begin
     If (Length(SizeEdit.Text) > 1) And
         (Length(SizeEdit.Text) <> SizeEdit.SelLength) And
         (SizeEdit.SelLength <> 0) And (SizeEdit.SelStart = 0) And
-        (SizeEdit.Text[SizeEdit.SelLength + 1] = '0') And Not(Key in ['1'..'9']) Then
+        (SizeEdit.Text[SizeEdit.SelLength + 1] = '0') And
+        Not(Key In ['1' .. '9']) Then
         Key := #0;
     If (SizeEdit.SelStart = 0) And (Key = '0') Then
         Key := #0;

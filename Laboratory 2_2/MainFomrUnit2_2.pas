@@ -34,9 +34,14 @@ Type
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
         Procedure FindNumbersButtonClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+        Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Procedure FormCreate(Sender: TObject);
+        Procedure FormDestroy(Sender: TObject);
     Private
         IsFileSaved: Boolean;
+        IsFindButtonPressed : Boolean;
+        Region: HRGN;
+        Procedure RoundForm();
     Public
         { Public declarations }
     End;
@@ -46,7 +51,7 @@ Var
 
 Implementation
 
-Uses AboutTheDeveloperUnit2_2, InstructionUnit2_2, BackendUnit2_2;
+Uses AboutTheDeveloperUnit2_2, InstructionUnit2_2, BackendUnit2_2, ExitUnit2_2;
 
 {$R *.dfm}
 
@@ -60,28 +65,34 @@ Var
     Numbers: TArrayOfInt;
     I: Integer;
 Begin
+    IsFindButtonPressed := True;
+    IsFileSaved := False;
     SearcherNumbers := TSearcherNumbers.Create();
     SearcherNumbers.SetK(StrToInt(KEdit.Text));
     SearcherNumbers.FindNumbers();
     Numbers := SearcherNumbers.GetNumbers();
-    if Numbers[0] > 0 then
+    If Numbers[0] > 0 Then
     Begin
-    AnswerLabel.Caption := 'Числа: ';
-    For I := 1 To Numbers[0] Do
-        AnswerLabel.Caption := AnswerLabel.Caption + IntToStr(Numbers[I]) + ' ';
+        AnswerLabel.Caption := 'Числа: ';
+        For I := 1 To Numbers[0] Do
+            AnswerLabel.Caption := AnswerLabel.Caption +
+                IntToStr(Numbers[I]) + ' ';
     End
-    else
+    Else
         AnswerLabel.Caption := 'Таких чисел не сущетсвует.';
     SaveFileButton.Enabled := True;
 End;
 
-procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-     If Not FindNumbersButton.Enabled Or IsFileSaved Then
-        CanClose := MessageBox(MainForm.Handle,
-            'Вы действительно хотите выйти?', 'Выход',
-            MB_ICONQUESTION + MB_YESNO) = ID_YES
-    Else If FindNumbersButton.Enabled Then
+Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+Begin
+    If Not IsFindButtonPressed Or IsFileSaved Then
+    Begin
+        Application.CreateForm(TExitForm, ExitForm);
+        ExitForm.ShowModal;
+        CanClose := ExitForm.GetStatus();
+        ExitForm.Destroy();
+    End
+    Else If IsFindButtonPressed Then
     Begin
         Repeat
             ExitCode := MessageBox(MainForm.Handle,
@@ -98,7 +109,23 @@ begin
                 CanClose := False;
         Until IsFileSaved Or (ExitCode = ID_NO) Or (ExitCode = ID_CANCEL);
     End;
-end;
+End;
+
+Procedure TMainForm.RoundForm;
+Begin
+    Region := CreateRoundRectRgn(0, 0, Width, Height, 30, 30);
+    SetWindowRgn(Handle, Region, True);
+End;
+
+Procedure TMainForm.FormCreate(Sender: TObject);
+Begin
+    RoundForm();
+End;
+
+Procedure TMainForm.FormDestroy(Sender: TObject);
+Begin
+    DeleteObject(Region);
+End;
 
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
 Begin
@@ -114,12 +141,14 @@ End;
 Procedure TMainForm.KEditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
 Begin
-    if (FindNumbersButton.Enabled) And (KEdit.SelLength = 0) And (KEdit.SelStart = Length(KEdit.Text)) And (Key = VK_RIGHT) then
+    If (FindNumbersButton.Enabled) And (KEdit.SelLength = 0) And
+        (KEdit.SelStart = Length(KEdit.Text)) And (Key = VK_RIGHT) Then
         ActiveControl := FindNumbersButton;
-    if (FindNumbersButton.Enabled) And (KEdit.SelLength = 0) And (KEdit.SelStart = 0) And (Key = VK_LEFT) then
+    If (FindNumbersButton.Enabled) And (KEdit.SelLength = 0) And
+        (KEdit.SelStart = 0) And (Key = VK_LEFT) Then
         ActiveControl := FindNumbersButton;
-    If (FindNumbersButton.Enabled) And ((Key = VK_DOWN) Or
-        (Key = VK_RETURN)) Then
+    If (FindNumbersButton.Enabled) And
+        ((Key = VK_DOWN) Or (Key = VK_RETURN)) Then
         ActiveControl := FindNumbersButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
         ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
@@ -173,12 +202,13 @@ Begin
                 MessageBox(MainForm.Handle,
                     'Число К неправильное или не соответствует границам! Проверьте данные.',
                     'Ой-йой', MB_ICONERROR)
-            else
+            Else
                 KEdit.Text := IntToStr(K);
         End
-            Else
-        MessageBox(MainForm.Handle, 'Файл закрыт для чтения или не текстовый! ',
-            'Ошибка', MB_ICONERROR);
+        Else
+            MessageBox(MainForm.Handle,
+                'Файл закрыт для чтения или не текстовый! ', 'Ошибка',
+                MB_ICONERROR);
         FileReader.Destroy();
         FileReader := Nil;
     End
