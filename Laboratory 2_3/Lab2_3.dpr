@@ -19,6 +19,5 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TInstructionForm, InstructionForm);
   Application.CreateForm(TAboutTheDeveloperForm, AboutTheDeveloperForm);
-  Application.CreateForm(TExitForm, ExitForm);
   Application.Run;
 end.

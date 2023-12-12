@@ -19,7 +19,6 @@ Begin
     TStyleManager.TrySetStyle('Tablet Dark');
     Application.CreateForm(TMainForm, MainForm);
     Application.CreateForm(TAboutTheDeveloperForm, AboutTheDeveloperForm);
-    Application.CreateForm(TExitForm, ExitForm);
     Application.CreateForm(TInstructionForm, InstructionForm);
     Application.Run;
 

@@ -238,7 +238,7 @@ End;
 Procedure TMainForm.SizeEditKeyPress(Sender: TObject; Var Key: Char);
 Const
     GOOD_KEYS: Set Of Char = ['1' .. '9', #08];
-    MAX_DIGITS: Integer = 2;
+    MAX_DIGITS: Integer = 1;
 Var
     SizeEdit: TEdit;
     TempKey: Char;

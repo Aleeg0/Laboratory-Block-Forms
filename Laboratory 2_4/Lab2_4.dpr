@@ -20,7 +20,6 @@ Begin
     Application.CreateForm(TMainForm, MainForm);
     Application.CreateForm(TAboutTheDeveloperForm, AboutTheDeveloperForm);
     Application.CreateForm(TInstructionForm, InstructionForm);
-    Application.CreateForm(TExitForm, ExitForm);
     Application.Run;
 
 End.

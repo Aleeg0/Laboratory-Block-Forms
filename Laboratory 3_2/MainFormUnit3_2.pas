@@ -193,6 +193,7 @@ Begin
         (Edit.SelStart = Length(Edit.Text)) And
         (Key In [VK_DOWN, VK_RIGHT]) Then
         ActiveControl := CreateSetButton;
+    TEdit(Sender).ReadOnly := ((SsShift In Shift) Or (SsCtrl In Shift));
 End;
 
 procedure TMainForm.UsersStringEditKeyPress(Sender: TObject; var Key: Char);

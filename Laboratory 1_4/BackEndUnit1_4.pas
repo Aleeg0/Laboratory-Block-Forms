@@ -132,7 +132,7 @@ End;
 Function TFileReader.InputSize: Integer;
 Const
     MIN_SIZE: Integer = 1;
-    MAX_SIZE: Integer = 1000;
+    MAX_SIZE: Integer = 99;
 Var
     Size: Integer;
 Begin

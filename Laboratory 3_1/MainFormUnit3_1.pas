@@ -33,10 +33,11 @@ Type
             Shift: TShiftState);
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+        Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Procedure UsersStringEditKeyPress(Sender: TObject; Var Key: Char);
     Private
         IsFileSaved: Boolean;
-        IsFindButtonPressed : Boolean;
+        IsFindButtonPressed: Boolean;
     Public
         { Public declarations }
     End;
@@ -58,7 +59,7 @@ End;
 
 Procedure TMainForm.FindNumberButtonClick(Sender: TObject);
 Begin
-IsFindButtonPressed := True;
+    IsFindButtonPressed := True;
     SaveFileButton.Enabled := True;
     IsFileSaved := False;
     If NumberSearcher = Nil Then
@@ -74,7 +75,7 @@ IsFindButtonPressed := True;
         FoundNumberLabel.Caption := 'Число не было найденно в данной строке!';
 End;
 
-procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Begin
     If Not IsFindButtonPressed Or IsFileSaved Then
     Begin
@@ -123,8 +124,9 @@ Begin
                 UsersStringEdit.Text := UsersString;
             End
             Else
-                MessageBox(MainForm.Handle, 'Похоже у вас в файле пустая строка!',
-                    'Ой-йой', MB_ICONERROR);
+                MessageBox(MainForm.Handle,
+                    'Похоже у вас в файле пустая строка!', 'Ой-йой',
+                    MB_ICONERROR);
         End
         Else
             MessageBox(MainForm.Handle,
@@ -179,7 +181,15 @@ Begin
         (Edit.SelStart = Length(Edit.Text)) And
         (Key In [VK_DOWN, VK_RIGHT]) Then
         ActiveControl := FindNumberButton;
+    TEdit(Sender).ReadOnly := ((SsShift In Shift) Or (SsCtrl In Shift));
+End;
 
+Procedure TMainForm.UsersStringEditKeyPress(Sender: TObject; Var Key: Char);
+Const
+    Max_SYMBOLS: Integer = 30;
+Begin
+    If (Length(TEdit(Sender).Text) > MAX_SYMBOLS) And (TEdit(Sender).SelLength = 0) And (Key <> #08) Then
+        Key := #0;
 End;
 
 End.
