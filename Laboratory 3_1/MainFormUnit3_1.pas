@@ -33,8 +33,10 @@ Type
             Shift: TShiftState);
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     Private
         IsFileSaved: Boolean;
+        IsFindButtonPressed : Boolean;
     Public
         { Public declarations }
     End;
@@ -56,6 +58,7 @@ End;
 
 Procedure TMainForm.FindNumberButtonClick(Sender: TObject);
 Begin
+IsFindButtonPressed := True;
     SaveFileButton.Enabled := True;
     IsFileSaved := False;
     If NumberSearcher = Nil Then
@@ -69,6 +72,34 @@ Begin
     End
     Else
         FoundNumberLabel.Caption := 'Число не было найденно в данной строке!';
+End;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+Begin
+    If Not IsFindButtonPressed Or IsFileSaved Then
+    Begin
+        Application.CreateForm(TExitForm, ExitForm);
+        ExitForm.ShowModal;
+        CanClose := ExitForm.GetStatus();
+        ExitForm.Destroy();
+    End
+    Else If IsFindButtonPressed Then
+    Begin
+        Repeat
+            ExitCode := MessageBox(MainForm.Handle,
+                'Сохранить данные в файл перед выходом?', 'Подверждение',
+                MB_ICONQUESTION + MB_YESNOCANCEL);
+            If ExitCode = ID_YES Then
+            Begin
+                SaveFileButtonClick(MainForm);
+                CanClose := True;
+            End
+            Else If ExitCode = ID_NO Then
+                CanClose := True
+            Else
+                CanClose := False;
+        Until IsFileSaved Or (ExitCode = ID_NO) Or (ExitCode = ID_CANCEL);
+    End;
 End;
 
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
@@ -132,6 +163,7 @@ Begin
     FindNumberButton.Enabled := Not String.IsNullOrEmpty(UsersStringEdit.Text);
     FoundNumberLabel.Caption := '';
     SaveFileButton.Enabled := False;
+    IsFindButtonPressed := False;
 End;
 
 Procedure TMainForm.UsersStringEditKeyDown(Sender: TObject; Var Key: Word;
