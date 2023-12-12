@@ -17,7 +17,7 @@ type
   end;
 
 var
-  Instruction1: TInstruction;
+  Instruction: TInstruction;
 
 implementation
 

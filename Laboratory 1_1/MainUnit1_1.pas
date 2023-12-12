@@ -11,8 +11,8 @@ Uses
 Type
     TMainForm = Class(TForm)
         MainMenu1: TMainMenu;
-        Instruction: TMenuItem;
-        AboutTheDeveloper: TMenuItem;
+    InstructionButton: TMenuItem;
+    AboutTheDeveloperButton: TMenuItem;
         Task: TLabel;
         InfoNum1: TLabel;
         Num1Edit: TEdit;
@@ -28,8 +28,7 @@ Type
         SaveDialog1: TSaveDialog;
         PopupMenu1: TPopupMenu;
         Procedure Button1Click(Sender: TObject);
-        Procedure AboutTheDeveloperClick(Sender: TObject);
-        Procedure InstructionClick(Sender: TObject);
+        Procedure InstructionButtonClick(Sender: TObject);
         Procedure NumEditKeyPress(Sender: TObject; Var Key: Char);
         Procedure NumEditChange(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
@@ -39,6 +38,7 @@ Type
         Procedure Num2EditKeyDown(Sender: TObject; Var Key: Word;
             Shift: TShiftState);
         Procedure SaveClick(Sender: TObject);
+    procedure AboutTheDeveloperButtonClick(Sender: TObject);
     Private
         Num1: Real;
         Num2: Real;
@@ -56,12 +56,12 @@ Implementation
 
 {$R *.dfm}
 
-Uses AboutDeveloperUnit1_1, InstructionUnit1_1, ExitUnit1_1;
+Uses AboutDeveloperUnit1_1, InstructionUnit1_1;
 
-Procedure TMainForm.AboutTheDeveloperClick(Sender: TObject);
-Begin
-    AboutTheDeveloper1.Show;
-End;
+procedure TMainForm.AboutTheDeveloperButtonClick(Sender: TObject);
+begin
+    AboutTheDeveloper.Show;
+end;
 
 Procedure TMainForm.Button1Click(Sender: TObject);
 Begin
@@ -86,9 +86,9 @@ Begin
         'Выход', MB_ICONQUESTION + MB_YESNO) = ID_YES;
 End;
 
-Procedure TMainForm.InstructionClick(Sender: TObject);
+Procedure TMainForm.InstructionButtonClick(Sender: TObject);
 Begin
-    Instruction1.Show;
+    Instruction.Show;
 End;
 
 Procedure TMainForm.Num1EditKeyDown(Sender: TObject; Var Key: Word;
@@ -187,7 +187,7 @@ Begin
             End;
             CloseFile(InFile);
         Except
-            MessageBox(MainForm.Handle, 'Файл закрыт для чтения!', 'Ошибка',
+            MessageBox(MainForm.Handle, 'Файл закрыт для чтения или не текстовый!', 'Ошибка',
                 MB_ICONERROR);
         End;
     End;
@@ -210,7 +210,7 @@ Begin
             End;
             CloseFile(OutFile);
         Except
-            MessageBox(MainForm.Handle, 'Файл закрыт для записи!', 'Ошибка',
+            MessageBox(MainForm.Handle, 'Файл закрыт для записи или не текстовый!', 'Ошибка',
                 MB_ICONERROR);
         End;
     End;

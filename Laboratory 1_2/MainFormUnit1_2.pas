@@ -108,7 +108,7 @@ Begin
             End;
             CloseFile(InFile);
         Except
-            MessageBox(MainForm.Handle, 'Файл закрыт для чтения!', 'Ошибка',
+            MessageBox(MainForm.Handle, 'Файл закрыт для чтения или не текстовый!', 'Ошибка',
                 MB_ICONERROR);
         End;
     End;
@@ -131,7 +131,7 @@ Begin
             End;
             CloseFile(OutFile);
         Except
-            MessageBox(MainForm.Handle, 'Файл закрыт для записи!', 'Ошибка',
+            MessageBox(MainForm.Handle, 'Файл закрыт для записи или не текстовый!', 'Ошибка',
                 MB_ICONERROR);
         End;
     End;

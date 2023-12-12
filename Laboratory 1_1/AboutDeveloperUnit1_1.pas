@@ -16,7 +16,7 @@ type
   end;
 
 var
-  AboutTheDeveloper1: TAboutTheDeveloper;
+  AboutTheDeveloper : TAboutTheDeveloper;
 
 implementation
 

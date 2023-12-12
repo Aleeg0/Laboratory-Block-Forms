@@ -179,7 +179,7 @@ End;
 Function TFileReader.IsFileGood: Boolean;
 Begin
     Status := False;
-    If Not(IsFileTxt() Or IsFileReadable()) Then
+    If Not FileExists(FileName) And Not(IsFileTxt() Or IsFileReadable()) Then
         Status := False
     Else
         Status := True;
@@ -226,7 +226,7 @@ End;
 Function TFileWriter.IsFileGood(): Boolean;
 Begin
     Status := False;
-    If Not(IsFileTxt() Or IsFileWritable()) Then
+    If Not FileExists(FileName) And Not(IsFileTxt() Or IsFileWritable()) Then
         Status := False
     Else
         Status := True;
