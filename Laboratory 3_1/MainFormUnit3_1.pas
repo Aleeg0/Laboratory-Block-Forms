@@ -181,7 +181,7 @@ Begin
         (Edit.SelStart = Length(Edit.Text)) And
         (Key In [VK_DOWN, VK_RIGHT]) Then
         ActiveControl := FindNumberButton;
-    TEdit(Sender).ReadOnly := ((SsShift In Shift) Or (SsCtrl In Shift));
+    TEdit(Sender).ReadOnly := ((Key = VK_INSERT) And (ssShift in Shift)) or (ssCtrl in Shift);
 End;
 
 Procedure TMainForm.UsersStringEditKeyPress(Sender: TObject; Var Key: Char);
