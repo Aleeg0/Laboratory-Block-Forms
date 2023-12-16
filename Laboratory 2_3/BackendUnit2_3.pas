@@ -160,7 +160,7 @@ End;
 Function TFileReader.IsFileGood: Boolean;
 Begin
     Status := False;
-    If Not FileExists(FileName) And Not(IsFileTxt() Or IsFileReadable()) Then
+    If Not FileExists(FileName) Or Not IsFileTxt() Or Not IsFileReadable() Then
         Status := False
     Else
         Status := True;
@@ -207,7 +207,7 @@ End;
 Function TFileWriter.IsFileGood(): Boolean;
 Begin
     Status := False;
-    If Not FileExists(FileName) And Not(IsFileTxt() Or IsFileWritable()) Then
+    If Not FileExists(FileName) Or Not IsFileTxt() Or Not IsFileWritable() Then
         Status := False
     Else
         Status := True;
@@ -229,7 +229,7 @@ End;
 Function TFileWriter.IsFileWritable: Boolean;
 Begin
     Try
-        Reset(OutFile);
+        Rewrite(OutFile);
         Status := True;
     Except
         Status := False;

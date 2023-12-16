@@ -26,8 +26,8 @@ Type
         AboutTheDeveloperButton: TMenuItem;
         PopupMenu1: TPopupMenu;
         ElementsInfo: TLabel;
-    SortArrayButton: TBitBtn;
-    ShowListButton: TBitBtn;
+        SortArrayButton: TBitBtn;
+        ShowListButton: TBitBtn;
         Procedure SizeEditKeyDown(Sender: TObject; Var Key: Word;
             Shift: TShiftState);
         Procedure SizeEditKeyPress(Sender: TObject; Var Key: Char);
@@ -45,14 +45,16 @@ Type
 
         Procedure ElementsOfArrayKeyUp(Sender: TObject; Var Key: Word;
             Shift: TShiftState);
-    procedure SortArrayButtonKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+        Procedure SortArrayButtonKeyDown(Sender: TObject; Var Key: Word;
+            Shift: TShiftState);
+        Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Function FormHelp(Command: Word; Data: NativeInt;
+            Var CallHelp: Boolean): Boolean;
     Private
         Size: Integer;
         IsFileSaved: Boolean;
         IsArrayFilled: Boolean;
-        IsSortButtonPressed : Boolean;
+        IsSortButtonPressed: Boolean;
         WasChanges: Boolean;
     Public
         { Public declarations }
@@ -82,7 +84,7 @@ Procedure TMainForm.OpenFileButtonClick(Sender: TObject);
 Var
     FileReader: TFileReader;
     I: Integer;
-    Arr : TArray;
+    Arr: TArray;
 Begin
     If OpenDialog1.Execute() Then
     Begin
@@ -147,7 +149,10 @@ Begin
             Else
                 MessageBox(MainForm.Handle, '”пс.. „то-то пошло не так!',
                     'ќй-йой', MB_ICONERROR);
-        End;
+        End
+        Else
+            MessageBox(MainForm.Handle, '¬веден не существующий файл!',
+                'ќй-йой', MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
     End;
@@ -172,7 +177,7 @@ Begin
     Size := StrToInt(SizeEdit.Text);
     If (MIN_SIZE < Size) And (Size < MAX_SIZE) Then
     Begin
-        if ArraySorter <> nil then
+        If ArraySorter <> Nil Then
             ArraySorter.Destroy();
         ArraySorter := TArraySorter.Create(Size);
         ElementsOfArray.RowCount := 2;
@@ -229,7 +234,10 @@ End;
 
 Procedure TMainForm.SizeEditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
+Var
+    CurEdit : TEdit;
 Begin
+    CurEdit := TEdit(Sender);
     If (SizeButton.Enabled) And (SizeEdit.SelLength = 0) And
         ((Key = VK_DOWN) Or (Key = VK_RETURN)) Then
         ActiveControl := SizeButton;
@@ -239,7 +247,12 @@ Begin
     If (ShowListButton.Enabled) And ((Key = VK_UP) Or (Key = VK_LEFT)) Then
         ActiveControl := ShowListButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
+        ((SsShift In Shift) Or (SsCtrl In Shift));
+    // for delete
+    If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
+        (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
+        Not (CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Key := 0;
 End;
 
 Procedure TMainForm.SizeEditKeyPress(Sender: TObject; Var Key: Char);
@@ -276,16 +289,15 @@ End;
 
 Procedure TMainForm.SortArrayButtonClick(Sender: TObject);
 Begin
-    ArraySorter.MergeSort(0,Size);
+    ArraySorter.MergeSort(0, Size);
     ShowListButton.Enabled := True;
     SaveFileButton.Enabled := True;
     IsFileSaved := False;
     IsSortButtonPressed := True;
 End;
 
-
-procedure TMainForm.SortArrayButtonKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+Procedure TMainForm.SortArrayButtonKeyDown(Sender: TObject; Var Key: Word;
+    Shift: TShiftState);
 Begin
     If (ShowListButton.Enabled) And ((Key = VK_DOWN) Or (Key = VK_RETURN)) Then
         ActiveControl := ShowListButton;
@@ -306,8 +318,7 @@ Begin
         ActiveControl := SortArrayButton
     Else If Not(SortArrayButton.Enabled) And (Key = VK_DOWN) Then
         ActiveControl := SizeEdit;
-    If (SortArrayButton.Enabled) And (IsArrayFilled) And
-        (Key = VK_RETURN) Then
+    If (SortArrayButton.Enabled) And (IsArrayFilled) And (Key = VK_RETURN) Then
         ActiveControl := SortArrayButton;
 End;
 
@@ -359,7 +370,8 @@ Begin
         If (Length(ElementsOfArray.Cells[I, 1]) <> 0) And
             (ElementsOfArray.Cells[I, 1] <> '-') Then
         Begin
-            ArraySorter.SetElementByIndex(StrToInt(ElementsOfArray.Cells[I, 1]), I - 1);
+            ArraySorter.SetElementByIndex
+                (StrToInt(ElementsOfArray.Cells[I, 1]), I - 1);
             Inc(Counter);
         End;
     End;
@@ -370,9 +382,7 @@ Begin
     SortArrayButton.Enabled := IsArrayFilled;
 End;
 
-
-
-procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Begin
     If Not IsSortButtonPressed Or IsFileSaved Then
     Begin
@@ -398,6 +408,12 @@ Begin
                 CanClose := False;
         Until IsFileSaved Or (ExitCode = ID_NO) Or (ExitCode = ID_CANCEL);
     End;
+End;
+
+Function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+    Var CallHelp: Boolean): Boolean;
+Begin
+    CallHelp := False;
 End;
 
 End.

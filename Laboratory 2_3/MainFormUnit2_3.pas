@@ -48,6 +48,8 @@ Type
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Function FormHelp(Command: Word; Data: NativeInt;
+            Var CallHelp: Boolean): Boolean;
     Private
         WasOrderOfMatrixChanged: Boolean;
         IsFileSaved: Boolean;
@@ -121,21 +123,22 @@ Begin
     // Ограничение символов
     If (Pos('-', TempNumber) = 0) And (Length(TempNumber) > MAX_DIGITS) Then
         Key := #0;
-    If (Pos('-', TempNumber) <> 0) And (Length(TempNumber) > MAX_DIGITS + 1) Then
+    If (Pos('-', TempNumber) <> 0) And
+        (Length(TempNumber) > MAX_DIGITS + 1) Then
         Key := #0;
     // первый символ
     If (Length(TempNumber) = 0) And ((Key In GOOD_KEYS) Or (Key = '-')) Then
         ElementsGrid.Cells[ElementsGrid.Col, ElementsGrid.Row] :=
             ElementsGrid.Cells[ElementsGrid.Col, ElementsGrid.Row] + Key;
     // второй символ
-    if (Pos('0', TempNumber) = 1) then
-        key := #0;
+    If (Pos('0', TempNumber) = 1) Then
+        Key := #0;
     If (Length(TempNumber) = 1) And (Pos('-', TempNumber) = 0) And
         ((Key In GOOD_KEYS) Or (Key = '0')) Then
         ElementsGrid.Cells[ElementsGrid.Col, ElementsGrid.Row] :=
             ElementsGrid.Cells[ElementsGrid.Col, ElementsGrid.Row] + Key;
-    If (Length(TempNumber) = 1) And (Pos('-', TempNumber) <> 0) And (Key <> '0') And
-        (Key In GOOD_KEYS) Then
+    If (Length(TempNumber) = 1) And (Pos('-', TempNumber) <> 0) And (Key <> '0')
+        And (Key In GOOD_KEYS) Then
         ElementsGrid.Cells[ElementsGrid.Col, ElementsGrid.Row] :=
             ElementsGrid.Cells[ElementsGrid.Col, ElementsGrid.Row] + Key;
     // отрицательные числа
@@ -229,6 +232,12 @@ Begin
                 CanClose := False;
         Until IsFileSaved Or (ExitCode = ID_NO) Or (ExitCode = ID_CANCEL);
     End;
+End;
+
+Function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+    Var CallHelp: Boolean): Boolean;
+Begin
+    CallHelp := False;
 End;
 
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
@@ -383,7 +392,12 @@ Begin
     If (FindMaxSumButton.Enabled) And (Key = VK_UP) Then
         ActiveControl := FindMaxSumButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
+        ((SsShift In Shift) Or (SsCtrl In Shift));
+    // for delete
+    If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
+        (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
+        Not (CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Key := 0;
 End;
 
 Procedure TMainForm.OrderOfMatrixEditKeyPress(Sender: TObject; Var Key: Char);
@@ -431,7 +445,10 @@ Begin
             Else
                 MessageBox(MainForm.Handle, 'Упс.. Что-то пошло не так!',
                     'Ой-йой', MB_ICONERROR);
-        End;
+        End
+        Else
+            MessageBox(MainForm.Handle, 'Введен не существующий файл!',
+                'Ой-йой', MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
     End;

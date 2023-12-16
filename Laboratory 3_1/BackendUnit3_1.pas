@@ -133,7 +133,7 @@ End;
 Function TFileReader.IsFileGood(): Boolean;
 Begin
     FileStatus := False;
-    If Not FileExists(FileName) And IsFileTxt() And IsFileReadable() Then
+    If FileExists(FileName) And IsFileTxt() And IsFileReadable() Then
         FileStatus := True;
     IsFileGood := FileStatus;
 End;
@@ -174,8 +174,7 @@ End;
 
 Function TFileWriter.IsFileGood(): Boolean;
 Begin
-    Status := False;
-    If Not FileExists(FileName) Or Not(IsFileTxt() Or IsFileWritable()) Then
+    If Not FileExists(FileName) Or Not(IsFileTxt() Or Not IsFileWritable()) Then
         Status := False
     Else
         Status := True;
@@ -197,7 +196,7 @@ End;
 Function TFileWriter.IsFileWritable: Boolean;
 Begin
     Try
-        Reset(OutFile);
+        ReWrite(OutFile);
         Status := True;
     Except
         Status := False;
@@ -206,13 +205,13 @@ Begin
     IsFileWritable := Status;
 End;
 
-Procedure TFileWriter.OutputNumber(Number : String);
+Procedure TFileWriter.OutputNumber(Number: String);
 Begin
     Try
         Rewrite(OutFile);
-        if NumberSearcher.WasNumber() then
-            Writeln(OutFile, 'Число: ', Number , '.')
-        else
+        If NumberSearcher.WasNumber() Then
+            Writeln(OutFile, 'Число: ', Number, '.')
+        Else
             Writeln(OutFile, 'Число не было найденно в данной строке!');
         Status := True;
     Except

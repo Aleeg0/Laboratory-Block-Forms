@@ -45,11 +45,13 @@ Type
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+    function FormHelp(Command: Word; Data: NativeInt;
+      var CallHelp: Boolean): Boolean;
     Private
         NumberOfTriangles: Integer;
         WasNumberOfTrianglesChanged: Boolean;
         IsFileSaved: Boolean;
-        wasSideChanged : Boolean;
+        WasSideChanged: Boolean;
     Public
         { Public declarations }
     End;
@@ -121,6 +123,12 @@ Begin
     // for correct display
     SidesOfTriangles.ColWidths[0] := 100;
 End;
+
+function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+  var CallHelp: Boolean): Boolean;
+begin
+    CallHelp := False;
+end;
 
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
 Begin
@@ -202,12 +210,18 @@ Begin
     If (NumberOfTrianglesButton.Enabled) And
         (Length(CurEdit.Text) = CurEdit.SelStart) And (Key = VK_RIGHT) Then
         ActiveControl := NumberOfTrianglesButton;
-    If (FindTriangleButton.Enabled) And (CurEdit.SelLength = 0) And (CurEdit.SelStart = 0) And (Key = VK_LEFT) Then
+    If (FindTriangleButton.Enabled) And (CurEdit.SelLength = 0) And
+        (CurEdit.SelStart = 0) And (Key = VK_LEFT) Then
         ActiveControl := FindTriangleButton;
-    if (FindTriangleButton.Enabled) And (Key = VK_UP) Then
+    If (FindTriangleButton.Enabled) And (Key = VK_UP) Then
         ActiveControl := FindTriangleButton;
     TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
+        ((SsShift In Shift) Or (SsCtrl In Shift));
+    // for delete
+    If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
+        (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
+        Not (CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Key := 0;
 End;
 
 Procedure TMainForm.NumberOfTrianglesEditKeyPress(Sender: TObject;
@@ -232,7 +246,8 @@ Begin
     If (Length(TrianglesEdit.Text) > 1) And
         (Length(TrianglesEdit.Text) <> TrianglesEdit.SelLength) And
         (TrianglesEdit.SelLength <> 0) And (TrianglesEdit.SelStart = 0) And
-        (TrianglesEdit.Text[TrianglesEdit.SelLength + 1] = '0') And Not(Key in ['1'..'9']) Then
+        (TrianglesEdit.Text[TrianglesEdit.SelLength + 1] = '0') And
+        Not(Key In ['1' .. '9']) Then
         Key := #0;
     // Key := 0;
     If (TrianglesEdit.SelStart = 0) And (Key = '0') Then
@@ -240,6 +255,7 @@ Begin
     If (Length(TrianglesEdit.Text) > MAX_DIGITS) And (Key <> #08) And
         (TrianglesEdit.SelLength = 0) Then
         Key := #0;
+
 End;
 
 Procedure TMainForm.OpenFileButtonClick(Sender: TObject);
@@ -316,7 +332,10 @@ Begin
             Else
                 MessageBox(MainForm.Handle, '”пс.. „то-то пошло не так!',
                     'ќй-йой', MB_ICONERROR);
-        End;
+        End
+        Else
+            MessageBox(MainForm.Handle, '¬веден не существующий файл!',
+                'ќй-йой', MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
     End;
@@ -381,16 +400,12 @@ Begin
         ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row] :=
             ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row] + Key;
     // остальный символы
+    If (Pos(',', TempNumber) <> 0) And (Key = ',') Then
+        Key := #0;
     If (Length(TempNumber) > 1) And ((Key In GOOD_KEYS) Or (Key = ',') Or
         (Key = '0')) Then
         ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row] :=
             ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row] + Key;
-    If (Pos(',', TempNumber) <> 0) And (Key = ',') Then
-        Key := #0;
-    { If (Key <> #0) And (Length(TempNumber) > 0) And (Key In GOOD_KEYS) Or
-      (Key = '0') Or (Key = '-') Then
-      ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row] :=
-      ArrGrid.Cells[ArrGrid.Col, ArrGrid.Row] + Key; }
     // change possition of actionBox
     If (Key = #13) And (ArrGrid.Col = (ArrGrid.ColCount - 1)) And
         (ArrGrid.Row < ArrGrid.RowCount - 1) Then
@@ -408,7 +423,7 @@ Var
     CountOfExistsTriangles, I, J: Integer;
     CountInputSides: Integer;
     A, B, C: Real;
-    isGridFill : Boolean;
+    IsGridFill: Boolean;
 Begin
     CountOfExistsTriangles := 0;
 

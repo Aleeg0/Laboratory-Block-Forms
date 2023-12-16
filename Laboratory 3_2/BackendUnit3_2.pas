@@ -7,7 +7,7 @@ Uses System.SysUtils;
 Const
     COUNT_SYMBOLS: Integer = 255;
     KEY_SYMBOLS: Set Of Char = ['[', ']', '{', '}', '(', ')', '+', '-', '*',
-        '/', '%'];
+        '/', '%', '<', '>', '=', ':', '^'];
 
 Type
     TSetOfChar = Set Of Char;
@@ -129,7 +129,7 @@ End;
 Function TFileReader.IsFileGood(): Boolean;
 Begin
     FileStatus := False;
-    If Not FileExists(FileName) And IsFileTxt() And IsFileReadable() Then
+    If FileExists(FileName) And IsFileTxt() And IsFileReadable() Then
         FileStatus := True;
     IsFileGood := FileStatus;
 End;
@@ -170,8 +170,7 @@ End;
 
 Function TFileWriter.IsFileGood(): Boolean;
 Begin
-    Status := False;
-    If Not FileExists(FileName) Or Not(IsFileTxt() Or IsFileWritable()) Then
+    If Not FileExists(FileName) Or Not IsFileTxt() Or Not IsFileWritable() Then
         Status := False
     Else
         Status := True;
@@ -193,7 +192,7 @@ End;
 Function TFileWriter.IsFileWritable: Boolean;
 Begin
     Try
-        Reset(OutFile);
+        Rewrite(OutFile);
         Status := True;
     Except
         Status := False;

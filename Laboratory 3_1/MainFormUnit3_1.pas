@@ -35,6 +35,8 @@ Type
         Procedure SaveFileButtonClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure UsersStringEditKeyPress(Sender: TObject; Var Key: Char);
+    function FormHelp(Command: Word; Data: NativeInt;
+      var CallHelp: Boolean): Boolean;
     Private
         IsFileSaved: Boolean;
         IsFindButtonPressed: Boolean;
@@ -103,6 +105,12 @@ Begin
     End;
 End;
 
+function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+  var CallHelp: Boolean): Boolean;
+begin
+    CallHelp := False;
+end;
+
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
 Begin
     InstructionForm.Show;
@@ -154,7 +162,10 @@ Begin
             Else
                 MessageBox(MainForm.Handle, '”пс.. „то-то пошло не так!',
                     'ќй-йой', MB_ICONERROR);
-        End;
+        End
+        else
+            MessageBox(MainForm.Handle, '¬веден не существующий файл!',
+                'ќй-йой', MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
     End;

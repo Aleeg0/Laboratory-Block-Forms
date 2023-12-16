@@ -37,6 +37,8 @@ Type
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure FormCreate(Sender: TObject);
         Procedure FormDestroy(Sender: TObject);
+    function FormHelp(Command: Word; Data: NativeInt;
+      var CallHelp: Boolean): Boolean;
     Private
         IsFileSaved: Boolean;
         IsFindButtonPressed : Boolean;
@@ -127,6 +129,12 @@ Begin
     DeleteObject(Region);
 End;
 
+function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+  var CallHelp: Boolean): Boolean;
+begin
+    CallHelp := False;
+end;
+
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
 Begin
     InstructionForm.Show();
@@ -140,7 +148,10 @@ End;
 
 Procedure TMainForm.KEditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
+Var
+    CurEdit : TEdit;
 Begin
+    CurEdit := TEdit(Sender);
     If (FindNumbersButton.Enabled) And (KEdit.SelLength = 0) And
         (KEdit.SelStart = Length(KEdit.Text)) And (Key = VK_RIGHT) Then
         ActiveControl := FindNumbersButton;
@@ -150,8 +161,13 @@ Begin
     If (FindNumbersButton.Enabled) And
         ((Key = VK_DOWN) Or (Key = VK_RETURN)) Then
         ActiveControl := FindNumbersButton;
-    TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
+    CurEdit.ReadOnly := (Key = VK_INSERT) And
+        ((SsShift In Shift) Or (SsCtrl In Shift));
+    // for delete
+    If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
+        (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
+        Not (CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Key := 0;
 End;
 
 Procedure TMainForm.KEditKeyPress(Sender: TObject; Var Key: Char);
@@ -230,7 +246,10 @@ Begin
             Else
                 MessageBox(MainForm.Handle, '”пс.. „то-то пошло не так!',
                     'ќй-йой', MB_ICONERROR);
-        End;
+        End
+        else
+            MessageBox(MainForm.Handle, '¬веден не существующий файл!',
+                'ќй-йой', MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
     End;

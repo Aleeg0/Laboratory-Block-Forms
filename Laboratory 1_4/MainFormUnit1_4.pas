@@ -49,6 +49,8 @@ Type
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure ElementsOfArrayKeyUp(Sender: TObject; Var Key: Word;
             Shift: TShiftState);
+    function FormHelp(Command: Word; Data: NativeInt;
+      var CallHelp: Boolean): Boolean;
     Private
         Size: Integer;
         Arr: TArrayOfInt;
@@ -144,7 +146,11 @@ Begin
             Else
                 MessageBox(MainForm.Handle, 'Упс.. Что-то пошло не так!',
                     'Ой-йой', MB_ICONERROR);
-        End;
+        End
+        Else
+            MessageBox(MainForm.Handle,
+                'Введен не существующий файл!', 'Ошибка',
+                MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
     End;
@@ -290,6 +296,7 @@ End;
 Procedure TMainForm.ElementsOfArrayKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
 Begin
+    ShowListButton.Enabled := False;
     If Key = VK_UP Then
         ActiveControl := SizeButton;
     If (CreateBArrayButton.Enabled) And (Key = VK_DOWN) Then
@@ -386,5 +393,11 @@ Begin
         Until IsFileSaved Or (ExitCode = ID_NO) Or (ExitCode = ID_CANCEL);
     End;
 End;
+
+function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+  var CallHelp: Boolean): Boolean;
+begin
+    CallHelp := False;
+end;
 
 End.

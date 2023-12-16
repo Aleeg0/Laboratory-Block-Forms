@@ -45,10 +45,12 @@ Type
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure OpenFileButtonClick(Sender: TObject);
         Procedure SaveFileButtonClick(Sender: TObject);
+    function FormHelp(Command: Word; Data: NativeInt;
+      var CallHelp: Boolean): Boolean;
     Private
         IsFileSaved: Boolean;
     Public
-        { Public declarations }
+
     End;
 
 Var
@@ -193,6 +195,12 @@ Begin
     End;
 End;
 
+function TMainForm.FormHelp(Command: Word; Data: NativeInt;
+  var CallHelp: Boolean): Boolean;
+begin
+    CallHelp := False;
+end;
+
 Procedure TMainForm.InstructionButtonClick(Sender: TObject);
 Begin
     Instruction.Show;;
@@ -270,6 +278,8 @@ Var
 Begin
     If SaveDialog1.Execute Then
     Begin
+        if FileExists(SaveDialog1.FileName) then
+        Begin
         AssignFile(OutFile, SaveDialog1.FileName);
         Try
             ReWrite(OutFile);
@@ -299,6 +309,10 @@ Begin
             MessageBox(MainForm.Handle, '‘айл закрыт дл€ записи или не текстовый!', 'ќшибка',
                 MB_ICONERROR);
         End;
+        End
+        else
+            MessageBox(MainForm.Handle, '¬веден не существующий файл!',
+                'ќй-йой', MB_ICONERROR);
     End;
 
 End;
@@ -322,8 +336,10 @@ End;
 
 Procedure TMainForm.XEditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
-
+Var
+    CurEdit : TEdit;
 Begin
+    CurEdit := TEdit(Sender);
     If (Key = VK_UP) Then
     Begin
         If Not(IsUserEps.Checked) Then
@@ -336,8 +352,13 @@ Begin
         ActiveControl := BitBtn1;
     If Not(BitBtn1.Enabled) And (Key = VK_DOWN) Then
         ActiveControl := IsUserEps;
-    TEdit(Sender).ReadOnly := (Key = VK_INSERT) And
-        ((SsShift In Shift) Or (SsCtrl In Shift)) Or (Key = VK_DELETE);
+    CurEdit.ReadOnly := (Key = VK_INSERT) And
+        ((SsShift In Shift) Or (SsCtrl In Shift));
+    // for delete
+    If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
+        (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
+        Not (CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Key := 0;
 End;
 
 Procedure TMainForm.XEditKeyPress(Sender: TObject; Var Key: Char);
