@@ -173,10 +173,10 @@ Begin
     Try
         Reset(InFile);
         Status := True;
+        CloseFile(InFile);
     Except
         Status := False;
     End;
-    CloseFile(InFile);
     IsFileReadable := Status;
 End;
 
@@ -276,16 +276,16 @@ Begin
     Try
         Rewrite(OutFile);
         Status := True;
+        CloseFile(OutFile);
     Except
         Status := False;
     End;
-    CloseFile(OutFile);
     IsFileWritable := Status;
 End;
 
 Function TFileWriter.IsFileGood(): Boolean;
 Begin
-    If Not FileExists(FileName) Or Not IsFileTxt() Or Not IsFileWritable() Then
+    If Not FileExists(FileName) And Not isFileTxt() Or Not IsFileWritable() Then
         Status := False
     Else
         Status := True;

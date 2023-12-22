@@ -149,7 +149,7 @@ Begin
         End
         Else
             MessageBox(MainForm.Handle,
-                'Введен не существующий файл!', 'Ошибка',
+                'Файл закрыт для записи или не текстовый!', 'Ошибка',
                 MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;

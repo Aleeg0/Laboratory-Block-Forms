@@ -103,13 +103,19 @@ Procedure TMainForm.Num1EditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
 Var
     KeyInput: Char;
+    CurEdit: TEdit;
 Begin
+    CurEdit := TEdit(Sender);
     If (Key = VK_DOWN) Or (Key = VK_RETURN) Then
         ActiveControl := Num2Edit;
     If (Button1.Enabled) And (Key = VK_UP) Then
         ActiveControl := Button1;
-    TEdit(Sender).ReadOnly := ((SsShift In Shift) Or (SsCtrl In Shift)) Or
-        (Key = VK_DELETE);
+    CurEdit.ReadOnly := ((SsShift In Shift) Or (SsCtrl In Shift));
+        // for delete
+    If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
+        (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
+        Not(CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Key := 0;
 End;
 
 Procedure TMainForm.Num2EditKeyDown(Sender: TObject; Var Key: Word;

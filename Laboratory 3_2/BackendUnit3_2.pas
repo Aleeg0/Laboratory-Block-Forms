@@ -107,10 +107,10 @@ Begin
     Try
         Reset(InFile);
         FileStatus := True;
+        CloseFile(InFile);
     Except
         FileStatus := False;
     End;
-    CloseFile(InFile);
     IsFileReadable := FileStatus;
 End;
 
@@ -194,10 +194,10 @@ Begin
     Try
         Rewrite(OutFile);
         Status := True;
+        CloseFile(OutFile);
     Except
         Status := False;
     End;
-    CloseFile(OutFile);
     IsFileWritable := Status;
 End;
 

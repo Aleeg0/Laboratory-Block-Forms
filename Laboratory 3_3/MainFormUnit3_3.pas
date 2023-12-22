@@ -151,7 +151,7 @@ Begin
                     'Ой-йой', MB_ICONERROR);
         End
         Else
-            MessageBox(MainForm.Handle, 'Введен не существующий файл!',
+            MessageBox(MainForm.Handle, 'Файл закрыт для записи или не текстовый!',
                 'Ой-йой', MB_ICONERROR);
         FileWriter.Destroy;
         FileWriter := Nil;
@@ -175,30 +175,33 @@ Var
 Begin
     // creating Grid
     Size := StrToInt(SizeEdit.Text);
-    If (MIN_SIZE < Size) And (Size < MAX_SIZE) Then
+    If WasChanges Then
     Begin
-        If ArraySorter <> Nil Then
-            ArraySorter.Destroy();
-        ArraySorter := TArraySorter.Create(Size);
-        ElementsOfArray.RowCount := 2;
-        ElementsOfArray.ColCount := Size + 1;
-        ElementsOfArray.FixedCols := 1;
-        ElementsOfArray.FixedRows := 1;
-        ElementsOfArray.Cells[0, 0] := '№';
-        ElementsOfArray.Cells[0, 1] := 'Элемент';
-        For I := 1 To Size Do
-            ElementsOfArray.Cells[I, 0] := IntToStr(I);
-        ElementsOfArray.Enabled := True;
-        ElementsInfo.Visible := True;
-        ElementsOfArray.Visible := True;
-        SortArrayButton.Visible := True;
-        ShowListButton.Visible := True;
-    End
-    Else
-        MessageBox(MainForm.Handle,
-            'Размер не соответствует границам! Проверьте данные.', 'Ой-йой',
-            MB_ICONERROR);
-
+        If (MIN_SIZE < Size) And (Size < MAX_SIZE) Then
+        Begin
+            If ArraySorter <> Nil Then
+                ArraySorter.Destroy();
+            ArraySorter := TArraySorter.Create(Size);
+            ElementsOfArray.RowCount := 2;
+            ElementsOfArray.ColCount := Size + 1;
+            ElementsOfArray.FixedCols := 1;
+            ElementsOfArray.FixedRows := 1;
+            ElementsOfArray.Cells[0, 0] := '№';
+            ElementsOfArray.Cells[0, 1] := 'Элемент';
+            For I := 1 To Size Do
+                ElementsOfArray.Cells[I, 0] := IntToStr(I);
+            ElementsOfArray.Enabled := True;
+            ElementsInfo.Visible := True;
+            ElementsOfArray.Visible := True;
+            SortArrayButton.Visible := True;
+            ShowListButton.Visible := True;
+        End
+        Else
+            MessageBox(MainForm.Handle,
+                'Размер не соответствует границам! Проверьте данные.', 'Ой-йой',
+                MB_ICONERROR);
+    End;
+    WasChanges := False;
 End;
 
 Procedure TMainForm.SizeEditChange(Sender: TObject);
@@ -235,7 +238,7 @@ End;
 Procedure TMainForm.SizeEditKeyDown(Sender: TObject; Var Key: Word;
     Shift: TShiftState);
 Var
-    CurEdit : TEdit;
+    CurEdit: TEdit;
 Begin
     CurEdit := TEdit(Sender);
     If (SizeButton.Enabled) And (SizeEdit.SelLength = 0) And
@@ -251,7 +254,7 @@ Begin
     // for delete
     If (Key = VK_DELETE) And (Length(CurEdit.Text) > 1) And
         (CurEdit.SelStart = 0) And (CurEdit.Text[2] = '0') And
-        Not (CurEdit.SelLength = Length(CurEdit.Text)) Then
+        Not(CurEdit.SelLength = Length(CurEdit.Text)) Then
         Key := 0;
 End;
 

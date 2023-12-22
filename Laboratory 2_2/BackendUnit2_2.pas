@@ -145,10 +145,10 @@ Begin
     Try
         Reset(InFile);
         Status := True;
+        CloseFile(InFile);
     Except
         Status := False;
     End;
-    CloseFile(InFile);
     IsFileReadable := Status;
 End;
 
@@ -212,10 +212,10 @@ Begin
     Try
         ReWrite(OutFile);
         Status := True;
+        CloseFile(OutFile);
     Except
         Status := False;
     End;
-    CloseFile(OutFile);
     IsFileWritable := Status;
 End;
 
