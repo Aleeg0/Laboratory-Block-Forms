@@ -36,7 +36,7 @@
 #*.dpr
 
 #The moduls
-*.dfm
+#*.dfm
 
 # Delphi compiler-generated binaries (safe to delete)
 #*.exe
