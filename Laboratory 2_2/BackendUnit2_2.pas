@@ -82,7 +82,7 @@ Begin
         ((K * MaxDigit * CountOfDigits) > MaxNumber) Do
     Begin
         MaxNumber := MaxNumber * 10;
-        CountOfDigits := CountOFDigits + 1;
+        Inc(CountOfDigits);
     End;
     MaxNumber := MaxNumber Div 10;
 End;
@@ -108,7 +108,7 @@ Begin
             Inc(Numbers[0]);
             Numbers[Counter] := Number;
         End;
-        Number := Number + K;
+        Inc(Number, K);
     End;
 End;
 
