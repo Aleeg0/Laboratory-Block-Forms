@@ -80,7 +80,7 @@ Begin
         For I := 0 To COUNT_SYMBOLS Do
             If Chr(I) In Symbols Then
                 OutputSetLabel.Caption := OutputSetLabel.Caption +
-                    Chr(I) + ', ';
+                    Chr(I) + '  ';
         TempString := OutputSetLabel.Caption;
         Delete(TempString,Length(OutputSetLabel.Caption) - 1,2);
         OutputSetLabel.Caption := TempString + '.';

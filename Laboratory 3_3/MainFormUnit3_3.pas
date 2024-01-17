@@ -195,6 +195,7 @@ Begin
             ElementsOfArray.Visible := True;
             SortArrayButton.Visible := True;
             ShowListButton.Visible := True;
+            SizeButton.Enabled := False;
         End
         Else
             MessageBox(MainForm.Handle,
@@ -297,6 +298,7 @@ Begin
     SaveFileButton.Enabled := True;
     IsFileSaved := False;
     IsSortButtonPressed := True;
+    SortArrayButton.Enabled := False;
 End;
 
 Procedure TMainForm.SortArrayButtonKeyDown(Sender: TObject; Var Key: Word;

@@ -330,6 +330,7 @@ Begin
         ElementsOfMatrix.Enabled := True;
         ElementsOfMatrix.Visible := True;
         ElementsOfMatrixInfo.Visible := True;
+        OrderOfMatrixButton.Enabled := False;
     End
     Else
         MessageBox(MainForm.Handle, '–азмер матрицы не соответствует границам!',

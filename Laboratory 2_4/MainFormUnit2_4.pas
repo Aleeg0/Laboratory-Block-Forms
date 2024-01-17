@@ -332,6 +332,7 @@ Begin
         ElementsOfMatrix.Enabled := True;
         ElementsOfMatrix.Visible := True;
         ElementsOfMatrixInfo.Visible := True;
+        OrderOfMatrixButton.Enabled := False;
     End
     Else
         MessageBox(MainForm.Handle, '–азмер матрицы не соответствует границам!',
@@ -352,7 +353,7 @@ Var
     I, J: Integer;
 Begin
     OrderOfMatrixButton.Enabled := Not String.IsNullOrEmpty
-        (OrderOfMatrixEdit.Text);
+        (OrderOfMatrixEdit.Text) And (OrderOfMatrixEdit.Text <> '1') And (OrderOfMatrixEdit.Text <> '2');
     If Not OrderOfMatrixButton.Enabled Then
     Begin
         ElementsOfMatrix.Enabled := False;

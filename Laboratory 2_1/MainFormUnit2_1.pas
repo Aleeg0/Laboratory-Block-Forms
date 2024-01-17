@@ -162,6 +162,7 @@ Begin
         SidesOfTriangles.Enabled := True;
         SidesOfTriangles.Visible := True;
         SidesOfTrianglesInfo.Visible := True;
+        NumberOfTrianglesButton.Enabled := False;
     End
     Else
         MessageBox(MainForm.Handle,
